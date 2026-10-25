@@ -305,12 +305,30 @@ header{padding-bottom:14px;gap:12px}
 .hcap{order:98;font-size:.8rem;align-self:center;text-align:center}
 .hdots{order:99;justify-content:center;gap:2px}
 }
+.pqrb{display:none;align-items:center;justify-content:center}
+.pdots i{position:relative}.pdots i:after{content:"";position:absolute;inset:-10px -4px}
+@media (max-width:820px),(max-aspect-ratio:1/1){
+.pctl{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;justify-items:center;column-gap:8px;left:12px;right:12px;transform:none;width:auto}
+.pdots{display:flex;gap:7px;padding:0;justify-self:center;align-items:center}
+.pdots i{width:10px;height:10px}
+.pcnt{display:none}
+.pqrb{display:inline-flex}
+}
+@media (max-height:520px){.pqr{display:none!important}.pqrb{display:inline-flex}}
+header{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.hbar{position:relative;z-index:3;display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:space-between;align-items:center;width:100%;margin-top:4px}
+header .hcap,header .hdots{position:static;left:auto;right:auto;bottom:auto;max-width:100%}
+header .hdots{justify-content:flex-end}
+.lang{max-width:100%}
+.lang button{padding:0 clamp(9px,2.6vw,18px);font-size:clamp(.82rem,3.4vw,.95rem);white-space:nowrap}
+@media(max-width:700px){.hbar{flex-direction:column;justify-content:center}header .hdots{justify-content:center}header .hcap{text-align:center}.lang{width:100%}.lang button{flex:1 1 0}}
+@media (max-width:820px),(max-aspect-ratio:1/1){.plang button{min-width:40px;padding:0 8px}}
 </style>
 </head>
 <body>
 <div class="bgl" id="bgA"></div><div class="bgl" id="bgB"></div>
 <div class="w">
-<header id="hd"><h1 id="h1"></h1><div class="lang"><button id="bES" onclick="setL('es')">Español</button><button id="bEN" onclick="setL('en')">English</button><button id="bFI" onclick="setL('fi')">Suomi</button></div><button class="presb" id="bPres" onclick="openPres()"></button></header>
+<header id="hd"><h1 id="h1"></h1><div class="lang"><button id="bES" onclick="setL('es')">Español</button><button id="bEN" onclick="setL('en')">English</button><button id="bFI" onclick="setL('fi')">Suomi</button><button id="bSV" onclick="setL('sv')">Svenska</button></div><button class="presb" id="bPres" onclick="openPres()"></button></header>
 <div class="intro" id="intro"></div>
 <div class="three" id="three"></div>
 <div class="sos" id="sos"></div>
@@ -835,7 +853,7 @@ SC.glaciar={n:{es:"Glaciares y fiordos",en:"Glaciers & fjords",fi:"Jäätiköt j
 
 var HI=0,CS="",LU=0,BF=0,SCN=Object.keys(SC),RS={AP:"atacama",TA:"atacama",AN:"atacama",AT:"atacama",CO:"atacama",VA:"valpo",RM:"santiago",LI:"santiago",ML:"santiago",NB:"lagos",BI:"lagos",AR:"lagos",LR:"lagos",LL:"chiloe",AY:"glaciar",MA:"paine",IP:"moai"},ZS={a:"santiago",n:"atacama",c:"santiago",l:"lagos",p:"paine"},TS=["santiago","atacama","valpo","lagos"];
 function initScenes(){HI=1;
-hd.insertAdjacentHTML("afterbegin",'<div class="hlw">'+SCN.map(function(k){return '<div class="hl" id="hl_'+k+'">'+SC[k].svg+'</div>'}).join("")+'</div><div class="hcap" id="hcap"></div><div class="hdots" id="hdots"></div>');
+hd.insertAdjacentHTML("afterbegin",'<div class="hlw">'+SCN.map(function(k){return '<div class="hl" id="hl_'+k+'">'+SC[k].svg+'</div>'}).join("")+'</div>');hd.insertAdjacentHTML("beforeend",'<div class="hbar"><div class="hcap" id="hcap"></div><div class="hdots" id="hdots"></div></div>');
 setScene("santiago",0);
 setInterval(function(){if(!document.hidden&&Date.now()-LU>25000)setScene(SCN[(SCN.indexOf(CS)+1)%SCN.length],0)},8000);
 if(typeof IntersectionObserver!="undefined"){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:.06});
@@ -853,28 +871,29 @@ var PQR={S:41,P:"M4 4h7v1h-7zM12 4h3v1h-3zM18 4h2v1h-2zM21 4h4v1h-4zM27 4h2v1h-2
 var PL={es:{hint:"Usa las flechas ← → o toca la pantalla",scan:"Escanea para abrir la guía",open:"Abre la guía completa en tu celular",exit:"Salir",pres:"🖥️ Modo proyección",q1:"¿Qué hace la PDI?",sos:"Números de emergencia"},
 en:{hint:"Use the arrow keys ← → or tap the screen",scan:"Scan to open the guide",open:"Open the full guide on your phone",exit:"Exit",pres:"🖥️ Presentation mode",q1:"What does the PDI do?",sos:"Emergency numbers"},
 fi:{hint:"Käytä nuolinäppäimiä ← → tai napauta näyttöä",scan:"Skannaa ja avaa opas",open:"Avaa koko opas puhelimellasi",exit:"Sulje",pres:"🖥️ Esitystila",q1:"Mitä PDI tekee?",sos:"Hätänumerot"}};
+PL.es.hintT="Desliza hacia los lados o usa las flechas";PL.en.hintT="Swipe left or right, or use the arrows";PL.fi.hintT="Pyyhkäise sivuille tai käytä nuolia";
 function qrSvg(){return '<svg viewBox="0 0 '+PQR.S+' '+PQR.S+'" shape-rendering="crispEdges" role="img" aria-label="QR"><rect width="'+PQR.S+'" height="'+PQR.S+'" fill="#fff"/><path d="'+PQR.P+'" fill="#000"/></svg>'}
 function pshort(t){var m=t.match(/^.*?[.!?](\s|$)/),r=m?m[0].trim():t;if(r.length>170)r=r.slice(0,160).replace(/\s+\S*$/,"")+"…";return r}
 function presBuild(){var d=D[L],t=PL[L],tc=["#0a5bd6","#12906a","#d9780a","#c0392b"],wc={PDI:"#0a5bd6",SM:"#12906a",EMB:"#d52b1e"},wi=["#0a5bd6","#12906a","#d52b1e"],s=[];
 function card(g,ti,bo,col,tag,n){return '<div class="pc" style="--tc:'+col+';--tb:'+col+'22">'+(n?'<span class="pn">'+n+'</span>':'')+'<div class="pi">'+ic(g)+'</div>'+(tag?'<span class="pt">'+tag+'</span>':'')+'<h3>'+ti+'</h3>'+(bo?'<p>'+bo+'</p>':'')+'</div>'}
-s.push(["santiago",'<h1>'+d.h1+'</h1><p class="pl">'+d.intro+'</p><p class="ph">'+t.hint+'</p>']);
+s.push(["santiago",'<h1>'+d.h1+'</h1><p class="pl">'+d.intro+'</p><p class="ph">'+((typeof matchMedia!="undefined"&&matchMedia("(pointer:coarse)").matches&&t.hintT)||t.hint)+'</p>']);
 s.push(["valpo",'<h2>'+t.q1+'</h2><div class="pcards">'+d.three.map(function(x,i){return card(x[0],x[1],x[2],["#0a5bd6","#7b3fe4","#12906a"][i])}).join("")+'</div>']);
 s.push(["lagos",'<h2>'+d.hWho+'</h2><div class="pcards">'+d.who.map(function(x,i){return card(x[0],x[1],x[2],wi[i])}).join("")+'</div>']);
 d.topics.forEach(function(tp,i){s.push([TS[i],'<h2 style="--tc:'+tc[i]+'"><span class="pbar"></span>'+tp.n+'</h2><div class="pcards">'+tp.s.map(function(st,j){return card(st[0],st[1],pshort(st[3]),wc[st[2]],d.by[st[2]],j+1)}).join("")+'</div>'])});
 s.push(["paine",'<h2>'+t.sos+'</h2><div class="psos">'+d.sos.map(function(x){return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>'}).join("")+'</div>']);
-s.push(["moai",'<div class="pfin"><div class="pqrbig">'+qrSvg()+'</div><div class="pft"><h1>'+t.scan+'</h1><p class="pl">'+t.open+'</p><p class="pu">'+PURL+'</p><p class="pm">Escanea el código · Scan the code · Skannaa koodi</p></div></div>']);
+s.push(["moai",'<div class="pfin"><div class="pqrbig">'+qrSvg()+'</div><div class="pft"><h1>'+t.scan+'</h1><p class="pl">'+t.open+'</p><p class="pu">'+PURL+'</p><p class="pm">Escanea el código · Scan the code · Skannaa koodi · Skanna koden</p></div></div>']);
 PS=s;
 document.getElementById("pbgs").innerHTML=SCN.map(function(k){return '<div class="pbgl" id="pb_'+k+'">'+SC[k].svg+'</div>'}).join("");
 document.getElementById("pslides").innerHTML=s.map(function(x,i){return '<section class="ps" id="ps'+i+'">'+x[1]+'</section>'}).join("");
 document.getElementById("pqr").innerHTML=qrSvg()+'<div>'+t.scan+'</div>';
 document.getElementById("pctl").innerHTML='<button class="pnav" onclick="presGo(PI-1)" aria-label="‹">‹</button><div class="pdots">'+s.map(function(x,i){return '<i onclick="presGo('+i+')"></i>'}).join("")+'</div><span class="pcnt" id="pcnt"></span><button class="pnav" onclick="presGo(PI+1)" aria-label="›">›</button>';
-document.getElementById("ptop").innerHTML='<div class="plang">'+["es","en","fi"].map(function(l){return '<button class="'+(l==L?'on':'')+'" onclick="presLang(\''+l+'\')">'+l.toUpperCase()+'</button>'}).join("")+'</div><div class="pact"><button class="pfs" onclick="presFull()" aria-label="Fullscreen">⛶</button><button class="pclose" onclick="closePres()" aria-label="'+t.exit+'">✕</button></div>';
+document.getElementById("ptop").innerHTML='<div class="plang">'+["es","en","fi","sv"].map(function(l){return '<button class="'+(l==L?'on':'')+'" onclick="presLang(\''+l+'\')">'+l.toUpperCase()+'</button>'}).join("")+'</div><div class="pact"><button class="pqrb" onclick="presGo(PS.length-1)" aria-label="QR">QR</button><button class="pfs" onclick="presFull()" aria-label="Fullscreen">⛶</button><button class="pclose" onclick="closePres()" aria-label="'+t.exit+'">✕</button></div>';
 }
 function presGo(n){n=Math.max(0,Math.min(PS.length-1,n));PI=n;
 PS.forEach(function(x,i){var e=document.getElementById("ps"+i);if(e)e.className="ps"+(i==n?" on":i<n?" pv":"")});
 SCN.forEach(function(k){var e=document.getElementById("pb_"+k);if(e)e.className="pbgl"+(k==PS[n][0]?" on":"")});
 var dd=document.querySelectorAll?document.querySelectorAll("#pctl .pdots i"):[],i;for(i=0;i<dd.length;i++)dd[i].className=i==n?"on":"";
-var pc=document.getElementById("pcnt");if(pc)pc.textContent=(n+1)+" / "+PS.length;document.getElementById("pprog").style.width=((n+1)/PS.length*100)+"%";
+var qb=document.querySelector(".pqrb");if(qb)qb.style.visibility=n==PS.length-1?"hidden":"";var pc=document.getElementById("pcnt");if(pc)pc.textContent=(n+1)+" / "+PS.length;document.getElementById("pprog").style.width=((n+1)/PS.length*100)+"%";
 document.getElementById("pqr").style.display=n==PS.length-1?"none":""}
 function presLang(l){setL(l);presBuild();presGo(PI)}
 function presFull(){var e=document.getElementById("pres");try{if(document.fullscreenElement){document.exitFullscreen()}else if(e.requestFullscreen){var r=e.requestFullscreen();if(r&&r.catch)r.catch(function(){})}}catch(x){}}
@@ -893,13 +912,62 @@ e.style.display="block";document.body.style.overflow="hidden";document.documentE
 try{history.pushState({pres:1},"")}catch(x){}}
 function closePres(fromPop){var e=document.getElementById("pres");if(e)e.style.display="none";PO=0;document.body.style.overflow="";document.documentElement.style.overflow="";document.removeEventListener("keydown",presKey);try{if(document.fullscreenElement)document.exitFullscreen()}catch(x){}
 if(fromPop!==true){try{if(history.state&&history.state.pres)history.back()}catch(x){}}}
+(function(){
+var SW=JSON.parse(JSON.stringify(D.en));D.sv=SW;
+SW.h1="Finländare i Chile: så kan PDI hjälpa dig";
+SW.intro="<b>Vad är PDI?</b> <i>Policía de Investigaciones de Chile</i> är Chiles civila utredningspolis. Du möter den på flygplatsen och vid gränsen, och den är ett av ställena du kan vända dig till om du blir utsatt för brott. Den här guiden förklarar steg för steg vad du kan förvänta dig.";
+[["Kontrollerar pass","på flygplatser och vid gränser"],["Utreder brott","under ledning av åklagare"],["Hjälper utlänningar","i polisärenden"]].forEach(function(x,i){SW.three[i][1]=x[0];SW.three[i][2]=x[1]});
+["PDI","Carabineros (polis)","Ambulans"].forEach(function(x,i){SW.sos[i][1]=x});
+SW.hWho="Vem gör vad?";
+SW.who[0][2]="Gränskontroll, passkontroll och brottsutredning.";
+SW.who[1][2]="Visum, uppehållstillstånd och förlängning av vistelse.";
+SW.who[2][1]="Finlands ambassad";SW.who[2][2]="Hjälp till finländska medborgare: nödresehandling och rådgivning.";
+SW.hPick="Vad behöver du hjälp med?";
+SW.by={PDI:"PDI",SM:"Migrationstjänsten",EMB:"Ambassaden"};
+SW.st="Steg";SW.prev="← Tillbaka";SW.next="Nästa →";SW.reset="Börja om ↺";SW.of="av";SW.have="Ha redo";
+SW.hint="Kryssa i det du redan har. Det är bara en påminnelse som hjälper dig att förbereda dig: ingenting sparas eller skickas till någon.";
+var TN=["Inresa till Chile","Vistelse i Chile","Borttappade eller stulna dokument","Brottsoffer"],
+CK=[["Giltigt pass","Returbiljett eller vidarebiljett","Adressen där du ska bo","Foto av ditt pass i telefonen"],["Pass eller en kopia","Ditt inresedatum","Migrationstjänstens kontaktuppgifter"],["Datum och plats för händelsen","Någon kopia eller något foto av din legitimation","Nummer för att spärra dina bankkort","Kopia av ditt förlustintyg eller din polisanmälan"],["Ditt pass","Anteckningar om vad som hände (tid, plats)","Ambassadens kontaktuppgifter","Försäkringsbrev"]],
+ST=[
+[["Innan du flyger","Kontrollera att ditt pass är giltigt. Finländska medborgare behöver i allmänhet inget visum för turism (upp till 90 dagar).","Reglerna kan ändras: bekräfta på officiella webbplatser innan du reser."],
+["Gå till passkontrollen","Ställ dig vid ankomsten i kön för utlänningar och visa ditt pass för PDI-tjänstemannen. Tjänstemannen kontrollerar det och registrerar din inresa.","Vänta i kön och ha passet redo."],
+["Svara på enkla frågor","Du kan få frågor om varför du besöker landet, var du ska bo och hur länge.","Korta, ärliga svar räcker."],
+["Håll dina dokument säkra","Din inresa registreras elektroniskt. Du behöver passet för att styrka att du vistas lagligt och för att lämna landet.","Lämna aldrig passet utan uppsikt."]],
+[["Känn till din tidsgräns","Turister kan i allmänhet vistas i upp till 90 dagar. Din tillåtna tid börjar på det datum då din inresa registrerades.","Skriv in datumet i telefonens kalender."],
+["Behöver du mer tid?","Förlängningar hanteras av Servicio Nacional de Migraciones, inte av PDI. Ansök innan din tillåtna tid går ut.","Gör det i god tid, inte på sista dagen."],
+["Ha med dig legitimation","PDI kan kontrollera att utlänningar vistas lagligt i landet. Ha med dig passet eller en kopia.","Ett foto i telefonen hjälper, men en kopia är bättre."],
+["Överskriden vistelse","Om du stannar längre än tillåtet kan du få böter eller andra åtgärder. Om du närmar dig gränsen, kontakta Migrationstjänsten omedelbart.","Planerar du att arbeta eller studera? Då behöver du först rätt tillstånd."]],
+[["Håll dig lugn och agera snabbt","Spärra dina bankkort och din telefon om de har tagits. Anteckna när och var det hände.","Gör detta före allt annat."],
+["Skaffa ditt förlustintyg (constancia)","Gå personligen till ett PDI-migrationskontor (Migraciones y Policía Internacional) och be om constancia de pérdida: ett officiellt intyg om att ditt pass eller din legitimation har förlorats. Om det stals, gör också en polisanmälan (denuncia) hos en PDI-enhet eller hos Carabineros.","Använd kartan nedan för att hitta närmaste kontor."],
+["Kontakta ambassaden","Visa ditt förlustintyg eller din polisanmälan och be om en nödresehandling så att du kan fortsätta resan eller åka hem.","Ambassaden berättar vilka handlingar den behöver."],
+["Att lämna landet","På flygplatsen kontrollerar PDI:s gränskontroll ditt dokument. Visa ditt nya dokument och ditt förlustintyg eller din polisanmälan om du blir ombedd.","Kom i god tid."]],
+[["Säkerheten först","Är du i fara? Ring 133 (Carabineros) eller 134 (PDI). För medicinsk hjälp, ring 131.","Ta dig till en säker plats där det finns folk."],
+["Gör en anmälan (denuncia)","Gå till närmaste PDI-enhet (BICRIM), Carabineros-station eller åklagarkontor. Anmälan är kostnadsfri och du behöver ingen advokat.","Ta med ditt pass."],
+["Hjälp med språket","Personalen talar mest spanska. Ta med någon som talar spanska eller be ambassaden om råd.","Be om att få din anmälan skriftligt."],
+["Vad händer sedan?","Du får en kopia av din anmälan. Åklagaren (Fiscalía) leder ärendet och PDI kan utreda.","Meddela ditt försäkringsbolag och ambassaden."]]];
+SW.topics.forEach(function(tp,i){tp.n=TN[i];tp.chk=CK[i];tp.s.forEach(function(st,j){st[1]=ST[i][j][0];st[3]=ST[i][j][1];st[4]=ST[i][j][2]})});
+SW.gl=[["Denuncia","En formell brottsanmälan till myndigheterna."],["Constancia","Ett skriftligt intyg om att något har anmälts, till exempel ett borttappat dokument."],["Fiscalía","Åklagarmyndigheten, som leder brottsutredningar."],["Extranjería","Det rättsområde och de tjänster som gäller utlänningar i Chile."]];
+SW.hGl="Spanska ord du kan stöta på";
+SW.note="Inofficiell informationsguide, inte en officiell PDI-publikation. Regler och kontaktuppgifter kan ändras. Bekräfta alltid på pdichile.cl, hos Servicio Nacional de Migraciones och hos Finlands ambassad.";
+SW.mapM="📍 Hitta migrationskontor på kartan";SW.mapB="📍 Hitta var du kan anmäla brott (BICRIM) på kartan";SW.mapA="🧭 Se hur du tar dig till Chile";
+var M2=JSON.parse(JSON.stringify(MT.en));MT.sv=M2;
+Object.assign(M2,{h:"Vart kan jag vända mig? Karta över PDI:s enheter",sub:"Tryck på en region eller en comuna (kommun) på kartan (du kan zooma och dra). Färgade markörer visar typen av enhet; skuggade comunas har enheter.",q:"Sök efter comuna, gata eller enhet…",all:"Alla",c:"Comuna",allc:"Alla comunas",B:"BICRIM (kriminalutredningsbrigad): här kan du göra en anmälan",E:"Specialiserade brigader och laboratorier",M:"Migration, gränskontroller och förposter",S:"Regionalt högkvarter och stöd till brottsoffer",none:"Inga enheter matchar dessa filter. Uppgifterna för området läggs fortfarande till.",tbc:"Adressen ska bekräftas",cov:"Omfattar",map:"Öppna i Google Maps",g1:"Enligt PDI:s offentliga register",g2:"Enhet bekräftad · adressen ska bekräftas",g3:"Från en äldre offentlig källa · bekräfta",near:"Ingen enhet är listad i denna comuna. De närmaste är:",ver:"Bekräfta alltid adress och telefonnummer på pdichile.cl/pdi-mas-cercano eller ring 134 / +56 2 2708 0000. Markörerna placeras efter comuna, så deras läge är ungefärligt.",ld:"enheter inlagda. Regioner med fullständig förteckning",hint:"Tryck för att öppna kartan över brigader, förposter och gränsövergångar",sea:"Stilla havet",gs:"S",gw:"V",tbcW:"Ungefärligt läge vid den internationella gränsen"});
+M2.cn={AR:"Argentina",BO:"Bolivia",PE:"Peru"};
+var A2=JSON.parse(JSON.stringify(AT.en));AT.sv=A2;
+Object.assign(A2,{h:"Så tar du dig till Chile",sub:"Välj ditt resmål: vi visar var du kan korsa gränsen och vad du kan förvänta dig där.",all:"Alla",exp:["PDI:s inresekontroll: visa ditt giltiga pass.","Tull och SAG: deklarera mat, växter och animaliska produkter (odeklarerade varor kan ge böter).","Kontrollera gränsövergångens status och öppettider innan du åker: de ändras med väder och säsong."],rt:"Rutt",gd:"Passar för",hr:"Rapporterade öppettider",map:"Visa på kartan",off:"Officiell status och öppettider för gränsövergångarna",mapA:"🧭 Se hur du tar dig till Chile",hint:"Tryck för att se var du kan korsa gränsen och vad du kan förvänta dig"});
+A2.z={a:"Med flyg",n:"Norr (öknen)",c:"Centrala Chile",l:"Sjöar och vulkaner",p:"Patagonien"};
+var P2=JSON.parse(JSON.stringify(PL.en));PL.sv=P2;
+Object.assign(P2,{hint:"Använd piltangenterna ← → eller tryck på skärmen",hintT:"Svep åt sidorna eller använd pilarna",scan:"Skanna för att öppna guiden",open:"Öppna hela guiden i din telefon",exit:"Stäng",pres:"🖥️ Presentationsläge",q1:"Vad gör PDI?",sos:"Nödnummer"});
+var N2={moai:"Påskön · Moai",paine:"Torres del Paine",atacama:"Atacamaöknen",santiago:"Santiago och Anderna",valpo:"Valparaíso",lagos:"Sjöar och vulkaner",chiloe:"Chiloé · pålhus",glaciar:"Glaciärer och fjordar"};
+SCN.forEach(function(k){SC[k].n.sv=N2[k]});
+})();
 function setL(l){L=l;document.documentElement.lang=l;render()}
 function pick(i){T=i;S=0;done={};setScene(TS[i],1);render()}
 function go(n){var t=D[L].topics[T].s;if(n<0||n>=t.length)return;done[T+"-"+S]=1;S=n;render()}
 function tg(i){var k=T+"-"+i;chk[k]=!chk[k];render()}
 function render(){
 var d=D[L],t=d.topics[T],st=t.s[S];
-bES.className=L=="es"?"on":"";bEN.className=L=="en"?"on":"";bFI.className=L=="fi"?"on":"";
+bES.className=L=="es"?"on":"";bEN.className=L=="en"?"on":"";bFI.className=L=="fi"?"on":"";bSV.className=L=="sv"?"on":"";
 h1.textContent=d.h1;intro.innerHTML=d.intro;
 three.innerHTML=d.three.map(function(x,i){return '<div class="c t'+[0,4,1][i]+'">'+ic(x[0])+'<b>'+x[1]+'</b>'+x[2]+'</div>'}).join("");
 sos.innerHTML=d.sos.map(function(x){return '<span><b>'+x[0]+'</b> '+x[1]+'</span>'}).join("");
